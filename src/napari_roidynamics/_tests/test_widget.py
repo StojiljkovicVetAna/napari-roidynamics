@@ -1,7 +1,6 @@
 import numpy as np
 
-from napari_roidynamics import ExampleQWidget, example_magic_widget
-
+from napari_roidynamics._widget import RoidynamicsforNapari
 
 # make_napari_viewer is a pytest fixture that returns a napari viewer object
 # capsys is a pytest fixture that captures stdout and stderr output streams
@@ -11,26 +10,12 @@ def test_example_q_widget(make_napari_viewer, capsys):
     viewer.add_image(np.random.random((100, 100)))
 
     # create our widget, passing in the viewer
-    my_widget = ExampleQWidget(viewer)
+    my_widget = RoidynamicsforNapari(viewer)
 
-    # call our widget method
-    my_widget._on_click()
+    my_widget._ROI_click()
+    viewer.layers['point of interest'].data = [[50,50]]
 
-    # read captured output and check that it's as we expected
-    captured = capsys.readouterr()
-    assert captured.out == "napari has 1 layers\n"
+    #call our widget method
+    my_widget._on_click_radial()
 
-
-def test_example_magic_widget(make_napari_viewer, capsys):
-    viewer = make_napari_viewer()
-    layer = viewer.add_image(np.random.random((100, 100)))
-
-    # this time, our widget will be a MagicFactory or FunctionGui instance
-    my_widget = example_magic_widget()
-
-    # if we "call" this object, it'll execute our function
-    my_widget(viewer.layers[0])
-
-    # read captured output and check that it's as we expected
-    captured = capsys.readouterr()
-    assert captured.out == f"you have selected {layer}\n"
+    assert 'radial_mask' in viewer.layers, "radial_mask layer not added"
