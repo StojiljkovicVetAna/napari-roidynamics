@@ -54,7 +54,7 @@ class RoidynamicsforNapari(QWidget):
         self.drop_layers = QComboBox()
         self.drop_layers_label = QLabel('2. Select the point or label layer from which the mask will be generated:')
     
-        self.tabs = TabSet(['Radial sector', 'Angular sector', 'Circular sector', 'Manual sector'])
+        self.tabs = TabSet(['Radial sector', 'Angular sector', 'Annular sector', 'Manual sector'])
         self.tabs_label = QLabel('3. Generate a sector of the desired geometry using the tabs:')
 
         # Radial sector
@@ -83,7 +83,7 @@ class RoidynamicsforNapari(QWidget):
         
         self.btn_angular = QPushButton('Generate angular sector!')
 
-        # Circular sector
+        # Annular sector
         self.spin_circle_width = QSpinBox()
         self.spin_circle_width.setRange(1,360)
         self.spin_circle_width.setValue(45)
@@ -99,7 +99,7 @@ class RoidynamicsforNapari(QWidget):
         self.spin_ring_width.setValue(10)
         self.spin_ring_width_label = QLabel('Ring width (pixels)')
 
-        self.btn_circle = QPushButton('Generate circular sector!') 
+        self.btn_circle = QPushButton('Generate annular sector!') 
 
         # Manual sector
         self.btn_manual = QPushButton('Add manual shape')
@@ -138,13 +138,13 @@ class RoidynamicsforNapari(QWidget):
         self.tabs.add_named_tab('Angular sector', self.spin_max_rad_label)
         self.tabs.add_named_tab('Angular sector', self.spin_max_rad)
         self.tabs.add_named_tab('Angular sector', self.btn_angular)
-        self.tabs.add_named_tab('Circular sector', self.spin_circle_width_label)
-        self.tabs.add_named_tab('Circular sector', self.spin_circle_width)
-        self.tabs.add_named_tab('Circular sector', self.spin_circle_rad_label)
-        self.tabs.add_named_tab('Circular sector', self.spin_circle_rad)
-        self.tabs.add_named_tab('Circular sector', self.spin_ring_width_label)
-        self.tabs.add_named_tab('Circular sector', self.spin_ring_width)
-        self.tabs.add_named_tab('Circular sector', self.btn_circle)
+        self.tabs.add_named_tab('Annular sector', self.spin_circle_width_label)
+        self.tabs.add_named_tab('Annular sector', self.spin_circle_width)
+        self.tabs.add_named_tab('Annular sector', self.spin_circle_rad_label)
+        self.tabs.add_named_tab('Annular sector', self.spin_circle_rad)
+        self.tabs.add_named_tab('Annular sector', self.spin_ring_width_label)
+        self.tabs.add_named_tab('Annular sector', self.spin_ring_width)
+        self.tabs.add_named_tab('Annular sector', self.btn_circle)
         self.tabs.add_named_tab('Manual sector', self.btn_manual)
         self.tabs.add_named_tab('Manual sector', self.drop_manual_combine_label)
         self.tabs.add_named_tab('Manual sector', self.drop_manual_combine)
@@ -173,10 +173,10 @@ class RoidynamicsforNapari(QWidget):
         self.spin_angular_width.valueChanged.connect(self._on_click_angular)
         self.spin_max_rad.valueChanged.connect(self._on_click_angular)
         self.btn_angular.clicked.connect(self._on_click_angular)
-        self.spin_circle_width.valueChanged.connect(self._on_click_circular)
-        self.spin_circle_rad.valueChanged.connect(self._on_click_circular)
-        self.spin_ring_width.valueChanged.connect(self._on_click_circular)
-        self.btn_circle.clicked.connect(self._on_click_circular)
+        self.spin_circle_width.valueChanged.connect(self._on_click_annular)
+        self.spin_circle_rad.valueChanged.connect(self._on_click_annular)
+        self.spin_ring_width.valueChanged.connect(self._on_click_annular)
+        self.btn_circle.clicked.connect(self._on_click_annular)
         self.btn_manual.clicked.connect(self._on_click_shapes)
         self.btn_manual_mask.clicked.connect(self._on_click_manual)
 
@@ -266,7 +266,7 @@ class RoidynamicsforNapari(QWidget):
         self.viewer.layers['angular_mask'].refresh()
 
     
-    def _on_click_circular(self):
+    def _on_click_annular(self):
 
         data = self.viewer.layers[0].data
 
@@ -278,16 +278,16 @@ class RoidynamicsforNapari(QWidget):
         else:
             raise('Not the correct layer')
         
-        self.circular_labels = splitmask.create_sector_mask(center=cm, im_dims=data.shape[-2::],
+        self.annular_labels = splitmask.create_sector_mask(center=cm, im_dims=data.shape[-2::],
                                                      angular_width=self.spin_circle_width.value(),
                                                      max_rad=self.spin_circle_rad.value(),
                                                      ring_width=self.spin_ring_width.value())
         
-        if "circular_mask" in self.viewer.layers:
-            self.viewer.layers['circular_mask'].data=self.circular_labels[0]
+        if "annular_mask" in self.viewer.layers:
+            self.viewer.layers['annular_mask'].data=self.annular_labels[0]
         else:
-            self.viewer.add_labels(self.circular_labels[0], name='circular_mask', num_colors=256, color=self.napari_cm)
-        self.viewer.layers['circular_mask'].refresh()
+            self.viewer.add_labels(self.annular_labels[0], name='annular_mask', num_colors=256, color=self.napari_cm)
+        self.viewer.layers['annular_mask'].refresh()
 
     
     def _on_click_shapes(self):
