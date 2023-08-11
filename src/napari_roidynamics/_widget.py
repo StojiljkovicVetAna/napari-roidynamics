@@ -331,6 +331,7 @@ class RoidynamicsforNapari(QWidget):
         self.intensity_plot.axes.clear()
         self.intensity_plot.axes.set_xlabel('Time point')
         self.intensity_plot.axes.set_ylabel('Intensity')
+        self.intensity_plot.axes.tick_params(colors='black')
                 
 
         for i in range(data.shape[1]):
