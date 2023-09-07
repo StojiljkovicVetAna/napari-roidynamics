@@ -116,15 +116,9 @@ class RoidynamicsforNapari(QWidget):
         self.drop_sector = QComboBox()
         self.drop_sector_label = QLabel('5. Select the sector mask to apply:')
 
-        self.btn_plot_int = QPushButton('6. Compute plot')
-        self.intensity_plot = DataPlotter(self.viewer)
-
-        #Save
-        self.btn_export_plot = QPushButton('7. Save plot data')
-
-        self.btn_export_all = QPushButton('Save all combinations')
+        #Fixed axis
         self.check_axis_all = QCheckBox()
-        self.check_axis_all.setText('Fixed axis for save all')
+        self.check_axis_all.setText('Set axes range')
         self.check_axis_all.setChecked(False)
         self.spin_xaxis_set_min = QSpinBox()
         self.spin_xaxis_set_min.setRange(0,1000)
@@ -140,6 +134,16 @@ class RoidynamicsforNapari(QWidget):
         self.spin_yaxis_set_max.setRange(1,100000)
         self.spin_yaxis_set_max.setValue(100)
         self.spin_yaxis_label = QLabel('Set y axis (min,max)')
+
+        self.btn_plot_int = QPushButton('6. Compute plot')
+        self.intensity_plot = DataPlotter(self.viewer)
+
+        #Save
+        self.btn_export_plot = QPushButton('7. Save plot data')
+
+        self.btn_export_all = QPushButton('Save all combinations')
+        
+        
 
         #Layout
         self.setLayout(QVBoxLayout())
@@ -174,10 +178,11 @@ class RoidynamicsforNapari(QWidget):
 
         self.layout().addWidget(self.drop_channel_label)
         self.layout().addWidget(self.drop_channel)
-        self.layout().addWidget(self.drop_sector_label)
+        self.layout().addWidget(self.drop_sector_label)self.btn_export_plot
         self.layout().addWidget(self.drop_sector)
+
         self.layout().addWidget(self.btn_plot_int)
-        self.layout().addWidget(self.btn_export_plot)
+
         self.layout().addWidget(self.check_axis_all)
 
         #Grid axis
@@ -193,6 +198,10 @@ class RoidynamicsforNapari(QWidget):
 
         self.layout().addWidget(self.grid)
         self.grid.setHidden(True)
+
+        
+        self.layout().addWidget(self.btn_export_plot)
+        
         self.layout().addWidget(self.btn_export_all)
 
         self._add_connections()
@@ -344,7 +353,22 @@ class RoidynamicsforNapari(QWidget):
 
         self.viewer.add_labels(manual_mask, num_colors=256, color=self.napari_cm)
 
-
+    def _on_checked_fixed_axis(self, checked):
+        self.grid.setHidden(False)
+        if checked == True:
+            self.spin_xaxis_set_min.setHidden(False)
+            self.spin_xaxis_set_max.setHidden(False)
+            self.spin_xaxis_label.setHidden(False)
+            self.spin_yaxis_set_min.setHidden(False)
+            self.spin_yaxis_set_max.setHidden(False)
+            self.spin_yaxis_label.setHidden(False)
+        else:
+            self.spin_xaxis_set_min.setHidden(True)
+            self.spin_xaxis_set_max.setHidden(True)
+            self.spin_xaxis_label.setHidden(True)
+            self.spin_yaxis_set_min.setHidden(True)
+            self.spin_yaxis_set_max.setHidden(True)
+            self.spin_yaxis_label.setHidden(True)
 
 
     def _on_plot(self):
@@ -374,6 +398,11 @@ class RoidynamicsforNapari(QWidget):
 
         for i in range(data.shape[1]):
             self.intensity_plot.axes.plot(data[:,i], color=self.matplotlib_cm(i+1))
+            if self.check_axis_all.isChecked() == True:
+                       self.intensity_plot.axes.set_xlim([self.spin_xaxis_set_min.value(), self.spin_xaxis_set_max.value()])
+                       self.intensity_plot.axes.set_ylim([self.spin_yaxis_set_min.value(), self.spin_yaxis_set_max.value()])
+            else:
+                pass
                                 
         self.intensity_plot.canvas.figure.canvas.draw()
 
@@ -394,23 +423,6 @@ class RoidynamicsforNapari(QWidget):
         self.intensity_plot.canvas.figure.savefig(self.export_folder.joinpath('export_plot.png'))
         
         imwrite(self.export_folder.joinpath('export_'+self.drop_sector.currentText()+'.tiff'), sector_mask)
-
-    def _on_checked_fixed_axis(self, checked):
-        self.grid.setHidden(False)
-        if checked == True:
-            self.spin_xaxis_set_min.setHidden(False)
-            self.spin_xaxis_set_max.setHidden(False)
-            self.spin_xaxis_label.setHidden(False)
-            self.spin_yaxis_set_min.setHidden(False)
-            self.spin_yaxis_set_max.setHidden(False)
-            self.spin_yaxis_label.setHidden(False)
-        else:
-            self.spin_xaxis_set_min.setHidden(True)
-            self.spin_xaxis_set_max.setHidden(True)
-            self.spin_xaxis_label.setHidden(True)
-            self.spin_yaxis_set_min.setHidden(True)
-            self.spin_yaxis_set_max.setHidden(True)
-            self.spin_yaxis_label.setHidden(True)
             
 
     def _export_all(self):
