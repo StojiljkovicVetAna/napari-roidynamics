@@ -6,7 +6,7 @@ and use them to generate masks of different geometries.
 
 from typing import TYPE_CHECKING
 
-from qtpy.QtWidgets import QPushButton, QWidget, QSpinBox, QVBoxLayout, QComboBox, QLabel, QFileDialog
+from qtpy.QtWidgets import QPushButton, QWidget, QSpinBox, QVBoxLayout, QComboBox, QLabel, QFileDialog, QCheckBox, QGridLayout
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,6 +29,8 @@ from .baseplot import DataPlotter
 from microfilm.dataset import MultipageTIFF, Nparray
 
 from cmap import Colormap
+
+
 
 if TYPE_CHECKING:
     import napari
@@ -107,7 +109,7 @@ class RoidynamicsforNapari(QWidget):
         self.drop_manual_combine_label = QLabel('Select the geometry to combine:')
         self.btn_manual_mask = QPushButton('Generate manual sector!')
         
-
+        #Plot
         self.drop_channel = QComboBox()
         self.drop_channel_label = QLabel('4. Select the channel to analyze:')
 
@@ -117,10 +119,29 @@ class RoidynamicsforNapari(QWidget):
         self.btn_plot_int = QPushButton('6. Compute plot')
         self.intensity_plot = DataPlotter(self.viewer)
 
+        #Save
         self.btn_export_plot = QPushButton('7. Save plot data')
 
         self.btn_export_all = QPushButton('Save all combinations')
+        self.check_axis_all = QCheckBox()
+        self.check_axis_all.setText('Fixed axis for save all')
+        self.check_axis_all.setChecked(False)
+        self.spin_xaxis_set_min = QSpinBox()
+        self.spin_xaxis_set_min.setRange(0,1000)
+        self.spin_xaxis_set_min.setValue(0)
+        self.spin_xaxis_set_max = QSpinBox()
+        self.spin_xaxis_set_max.setRange(1,100000)
+        self.spin_xaxis_set_max.setValue(100)
+        self.spin_xaxis_label = QLabel('Set x axis (min,max)')
+        self.spin_yaxis_set_min = QSpinBox()
+        self.spin_yaxis_set_min.setRange(0,1000)
+        self.spin_yaxis_set_min.setValue(0)
+        self.spin_yaxis_set_max = QSpinBox()
+        self.spin_yaxis_set_max.setRange(1,100000)
+        self.spin_yaxis_set_max.setValue(100)
+        self.spin_yaxis_label = QLabel('Set y axis (min,max)')
 
+        #Layout
         self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.btn_ROI_label)
         self.layout().addWidget(self.btn_ROI)
@@ -128,6 +149,7 @@ class RoidynamicsforNapari(QWidget):
         self.layout().addWidget(self.drop_layers)
         self.layout().addWidget(self.tabs_label)
         self.layout().addWidget(self.tabs)
+
         self.tabs.add_named_tab('Radial sector', self.spin_sector_width_label)
         self.tabs.add_named_tab('Radial sector', self.spin_sector_width)
         self.tabs.add_named_tab('Radial sector', self.spin_num_sector_label)
@@ -156,9 +178,22 @@ class RoidynamicsforNapari(QWidget):
         self.layout().addWidget(self.drop_sector)
         self.layout().addWidget(self.btn_plot_int)
         self.layout().addWidget(self.btn_export_plot)
-        self.layout().addWidget(self.btn_export_all)
+        self.layout().addWidget(self.check_axis_all)
 
-        
+        #Grid axis
+        self.grid = QWidget()
+        self.grid.setLayout(QGridLayout())
+        self.grid.layout().addWidget(self.spin_xaxis_label, 0, 0)
+
+        self.grid.layout().addWidget(self.spin_xaxis_set_min, 0, 1)
+        self.grid.layout().addWidget(self.spin_xaxis_set_max, 0, 2)
+        self.grid.layout().addWidget(self.spin_yaxis_label, 1, 0)
+        self.grid.layout().addWidget(self.spin_yaxis_set_min, 1, 1)
+        self.grid.layout().addWidget(self.spin_yaxis_set_max, 1, 2)
+
+        self.layout().addWidget(self.grid)
+        self.grid.setHidden(True)
+        self.layout().addWidget(self.btn_export_all)
 
         self._add_connections()
         
@@ -182,6 +217,7 @@ class RoidynamicsforNapari(QWidget):
 
         self.btn_plot_int.clicked.connect(self._on_plot)
         self.btn_export_plot.clicked.connect(self._export_plot)
+        self.check_axis_all.toggled.connect(self._on_checked_fixed_axis)
         self.btn_export_all.clicked.connect(self._export_all)
         
 
@@ -328,6 +364,8 @@ class RoidynamicsforNapari(QWidget):
         
         data = self.signal_radius.sel(channel=0, roi=0)
 
+        plt.style.context('dark_background')
+
         self.intensity_plot.axes.clear()
         self.intensity_plot.axes.set_xlabel('Time point')
         self.intensity_plot.axes.set_ylabel('Intensity')
@@ -357,6 +395,24 @@ class RoidynamicsforNapari(QWidget):
         
         imwrite(self.export_folder.joinpath('export_'+self.drop_sector.currentText()+'.tiff'), sector_mask)
 
+    def _on_checked_fixed_axis(self, checked):
+        self.grid.setHidden(False)
+        if checked == True:
+            self.spin_xaxis_set_min.setHidden(False)
+            self.spin_xaxis_set_max.setHidden(False)
+            self.spin_xaxis_label.setHidden(False)
+            self.spin_yaxis_set_min.setHidden(False)
+            self.spin_yaxis_set_max.setHidden(False)
+            self.spin_yaxis_label.setHidden(False)
+        else:
+            self.spin_xaxis_set_min.setHidden(True)
+            self.spin_xaxis_set_max.setHidden(True)
+            self.spin_xaxis_label.setHidden(True)
+            self.spin_yaxis_set_min.setHidden(True)
+            self.spin_yaxis_set_max.setHidden(True)
+            self.spin_yaxis_label.setHidden(True)
+            
+
     def _export_all(self):
         self.export_folder_loop = Path(str(QFileDialog.getExistingDirectory(self, "Select Directory")))
 
@@ -382,9 +438,16 @@ class RoidynamicsforNapari(QWidget):
                 self.intensity_plot.axes.clear()
                 self.intensity_plot.axes.set_xlabel('Time point')
                 self.intensity_plot.axes.set_ylabel('Intensity')
+                self.intensity_plot.axes.tick_params(colors='black')
+
 
                 for i in range(data_loop.shape[1]):
                     self.intensity_plot.axes.plot(data_loop[:,i], color=self.matplotlib_cm(i+1))
-
+                    if self.check_axis_all.isChecked() == True:
+                       self.intensity_plot.axes.set_xlim([self.spin_xaxis_set_min.value(), self.spin_xaxis_set_max.value()])
+                       self.intensity_plot.axes.set_ylim([self.spin_yaxis_set_min.value(), self.spin_yaxis_set_max.value()])
+                    else:
+                        pass
+                 
                 self.intensity_plot.canvas.figure.savefig(self.export_folder_loop.joinpath('export'+self.drop_channel.itemText(c)+'_'+self.drop_sector.itemText(m)+'_plot.png'))
 
