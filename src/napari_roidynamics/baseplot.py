@@ -12,7 +12,7 @@ class DataPlotter(NapariMPLWidget):
         super().__init__(napari_viewer)
         self.axes = self.canvas.figure.subplots()
         self.cursor_pos = np.array([])
-        self.axes.tick_params(colors='white')
+        #self.axes.tick_params(colors='white')
        
 
     def clear(self):
