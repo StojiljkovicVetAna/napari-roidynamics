@@ -31,7 +31,7 @@ After installing conda, execute these three commands in your terminal or command
 ```
 conda create -y -n napari-env -c conda-forge python=3.9
 conda activate napari-env
-python -m pip install "napari[all]"
+pip install "napari[all]"
 ```
 In this example, with the first command you create a new environment called 'napari-env' (here you can pick the name that you prefer), and you install python 3.9 in this new environment. Then you activate it and finally you install napari.
 
