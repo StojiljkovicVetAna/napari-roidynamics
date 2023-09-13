@@ -54,7 +54,7 @@ In the new environment with napari correctly running, now you can install the na
     pip install git+https://github.com/StojiljkovicVetAna/napari-roidynamics.git
 
 ### Use napari-roidynamics
-If the installation was successful, you will be able to use napari-roidynamics from your new environment. Make sure that the environment is active and type napari in the terminal, the napari GUI should appear. From the GUI you should navigate to Plugins/napari-roidynamics to open the plugin. <br/>
+If the installation was successful, you will be able to use napari-roidynamics from your new environment. Make sure that the environment is active and type napari in the terminal, the napari GUI should appear. From the GUI you should navigate to Plugins/Dynamics(napari-roidynamics) to open the plugin. <br/>
 Detailed instructions for the plugin are provided in the [step-by-step guide].
 
 ## Authors
