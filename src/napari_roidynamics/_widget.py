@@ -178,7 +178,7 @@ class RoidynamicsforNapari(QWidget):
 
         self.layout().addWidget(self.drop_channel_label)
         self.layout().addWidget(self.drop_channel)
-        self.layout().addWidget(self.drop_sector_label)self.btn_export_plot
+        self.layout().addWidget(self.drop_sector_label)
         self.layout().addWidget(self.drop_sector)
 
         self.layout().addWidget(self.btn_plot_int)
