@@ -11,39 +11,51 @@ This [napari] plugin was generated with [Cookiecutter] using [@napari]'s [cookie
 
 Plugin to use the python package 'roidynamics' within napari.
 
-The [roidynamics] package provides interesting tools to analyze the dynamics of intensity in time-lapse microscopy images split into regions of specific geometries.
+The [roidynamics] package provides interesting tools to analyze the dynamics of intensity in time-lapse images split into regions of specific geometries.
 
 Here we have wrapped the roidynamics functions into an easy-to-use napari plugin, which enables to interactively setup points of interest, which are used to generate masks of different geometries. In the current version you can select three different geometries:
 
 <center><img src="https://raw.githubusercontent.com/StojiljkovicVetAna/napari-roidynamics/main/docs/images/napari-roidynamics_shapes.png" width="490" height="190"/></center>
 
-These specific masks are then used to compute intensity measurements on different channels of the time-lapse images. The intensity data can be viewed in napari or saved along with the masks.
+We also allow to combine one of these three masks with any user-defined shape. This increases the flexibility of the plugin. However, if you wish to see a new shape please [file an issue]. 
+
+These specific masks are then used to measure intensity on different channels of the time-lapse images. The intensity data can be viewed in napari or saved as plots and csv data along with the masks.
 
 ----------------------------------
 ## Installation
 
 Install napari-roidynamics in a python environment where you have pre-installed the python viewer [napari]!
 
-If you don't have a python environment yet, follow the example below, which uses [conda] as environment manager. Or explore the different options illustrated on the [napari installation] website.
+If you don't have a python environment yet, follow the example below, which uses a package manager called [mamba]. We suggest using Mamba because is faster, but a [conda] environment manager is a valid alternative. If you use conda, you will need to use the example below writing "conda" instead of "mamba" in the command line. <br> Alternatively, explore the different options illustrated on the [napari installation] website.<br>
+If you are not familiar with this topics we suggest reading the [BiAPoL blog post] about mambaforge & python.
 
 ### First create a python environment containing napari
-After installing conda, execute these three commands in your terminal or command prompt.
+After installing [mamba], execute these three commands in your terminal(OS) or command prompt.
+
 ```
-conda create -y -n napari-env -c conda-forge python=3.9
-conda activate napari-env
-pip install "napari[all]"
+mamba create -y -n napari-roidynamics -c conda-forge python=3.9
+mamba activate napari-roidynamics
+mamba install -c conda-forge napari pyqt
 ```
-In this example, with the first command you create a new environment called 'napari-env' (here you can pick the name that you prefer), and you install python 3.9 in this new environment. Then you activate it and finally you install napari.
+In this example, with the first command you create a new environment called 'napari-roidynamics' (this is only an exemplar name, you can assign the name that you prefer to this new environment).<br> In the same first line of code you also install python 3.9 from conda-forge.<br> Then you activate the newly created environment and finally you install napari and pyqt from conda-forge in this environment.<br>
+At this stage we suggest testing if the napari installation works, before proceeding with installing napari-roidynamics. To do so, after making sure that the newly created environment is actives, simply write napari in the terminal and execute it. A napari window should open.<br>
+
+If you don't remember the name of your environment you can always use the command:
+
+    mamba env list
 
 ### Install napari-roidynamics
+In the new environment with napari correctly running, now you can install the napari-roidynamics plugin.
+#### stable version from pip:
 
-In the newly created environment, now you can install napari-roidynamics from Github using this command:
+    pip install napari-roidynamics
+#### latest development version from GitHub:
 
     pip install git+https://github.com/StojiljkovicVetAna/napari-roidynamics.git
 
 ### Use napari-roidynamics
 If the installation was successful, you will be able to use napari-roidynamics from your new environment. Make sure that the environment is active and type napari in the terminal, the napari GUI should appear. From the GUI you should navigate to Plugins/napari-roidynamics to open the plugin. <br/>
-Detailed instructions for the plugin are provided in the step-by-step guide.
+Detailed instructions for the plugin are provided in the [step-by-step guide].
 
 ## Authors
 
@@ -82,3 +94,6 @@ If you encounter any problems, please [file an issue] along with a detailed desc
 
 [roidynamics]: https://github.com/guiwitz/roidynamics
 [conda]: https://docs.conda.io/en/latest/miniconda.html
+[mamba]: https://github.com/conda-forge/miniforge#mambaforge
+[BiAPoL blog post]: https://biapol.github.io/blog/mara_lampert/getting_started_with_mambaforge_and_python/readme.html
+[step-by-step guide]: https://stojiljkovicvetana.github.io/napari-roidynamics/docs/instructions.html
